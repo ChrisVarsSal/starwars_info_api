@@ -19,9 +19,9 @@ function CharacterList() {
         const data = await getCharacters(currentPage);
         setCharacters(data.results);
         setPageInfo({
-          count: data.info.count,
-          next: data.info.next,
-          previous: data.info.previous,
+          count: data.count,
+          next: data.next,
+          previous: data.previous,
         });
         setError(null);
       } catch (error) {
