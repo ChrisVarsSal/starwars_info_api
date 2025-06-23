@@ -1,17 +1,18 @@
-import './App.css';
-import Navbar from './components/Navbar';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import CharacterList from './pages/CharacterList';
+import "./App.css";
+import Navbar from "./components/Navbar";
+import { Routes, Route, Navigate } from "react-router-dom";
+import CharacterList from "./pages/CharacterList";
+import CharacterDetail from "./pages/CharacterDetail";
 
 function App() {
   return (
     <>
       <Navbar />
-      <div className='container'>
+      <div className="container">
         <Routes>
-          <Route path='/' element={<CharacterList />} />
-          <Route path='/character/:id' element={<h1>Character</h1>} />
-          <Route path='*' element={<Navigate to='/' />} />
+          <Route path="/" element={<CharacterList />} />
+          <Route path="/character/:id" element={<CharacterDetail />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </>
