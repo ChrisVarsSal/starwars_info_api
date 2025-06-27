@@ -19,3 +19,21 @@ export const getCharacter = async (id) => {
     throw error;
   }
 };
+export const getPlanets = async (page = 1) => {
+  try {
+    const response = await axios.get(`${API_URL}/planets/?page=${page}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching planets:", error);
+    throw error;
+  }
+};
+export const getPlanet = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}/planets/${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching planet with ID ${id}:`, error);
+    throw error;
+  }
+};
