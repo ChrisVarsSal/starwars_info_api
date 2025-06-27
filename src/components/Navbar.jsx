@@ -12,7 +12,7 @@ function Navbar() {
             <Link to="/">Characters</Link>
           </li>
           <li>
-            <Link to="/ships">Ships</Link>
+            <Link to="/starships">Starships</Link>
           </li>
           <li>
             <Link to="/planets">Planets</Link>
