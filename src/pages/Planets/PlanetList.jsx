@@ -6,73 +6,82 @@ function PlanetList() {
   const [planets, setPlanets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageInfo, setPageInfo] = useState({
-    count: 0,
-    next: null,
-    previous: null,
-  });
+  const resultsPerPage = 9;
+
   useEffect(() => {
-    const fetchPlanets = async () => {
+    const fetchAllPlanets = async () => {
       try {
         setLoading(true);
-        const data = await getPlanets(currentPage);
-        setPlanets(data.results);
-        setPageInfo({
-          count: data.count,
-          next: data.next,
-          previous: data.previous,
-        });
+        let allPlanets = [];
+        let page = 1;
+        let next = true;
+
+        while (next) {
+          const data = await getPlanets(page);
+          allPlanets = [...allPlanets, ...data.results];
+          next = data.next !== null;
+          page += 1;
+        }
+
+        setPlanets(allPlanets);
         setError(null);
-      } catch (error) {
-        setError(error.message);
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchPlanets();
-  }, [currentPage]);
+
+    fetchAllPlanets();
+  }, []);
+
+  const indexOfLast = currentPage * resultsPerPage;
+  const indexOfFirst = indexOfLast - resultsPerPage;
+  const currentPlanets = planets.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(planets.length / resultsPerPage);
 
   const handleNextPage = () => {
-    if (pageInfo.next) {
-      setCurrentPage(currentPage + 1);
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
     }
   };
 
-  const handlePreviosPage = () => {
-    if (pageInfo.previous) {
-      setCurrentPage(currentPage - 1);
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
     }
   };
-  if (loading) {
-    return <div className="loading">Loadign Planets</div>;
-  }
-  if (error) {
-    return <div className="error-message">Error: {error}</div>;
-  }
+
+  if (loading) return <div className="loading">Loading Planets...</div>;
+  if (error) return <div className="error-message">Error: {error}</div>;
+
   return (
     <div>
       <h1>Star Wars Planets</h1>
+
       <div className="card-grid">
-        {planets.map((planet) => (
+        {currentPlanets.map((planet) => (
           <PlanetCard key={planet.url} planet={planet} />
         ))}
       </div>
+
       <div className="page-controls">
         <button
           className="btn"
-          onClick={handlePreviosPage}
-          disabled={!pageInfo.previous}
-          style={{ opacity: pageInfo.previous ? 1 : 0.5 }}
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
         >
           Previous
         </button>
-        <button>{currentPage}</button>
+        <span> Page {currentPage} of {totalPages} </span>
         <button
           className="btn"
           onClick={handleNextPage}
-          disabled={!pageInfo.next}
-          style={{ opacity: pageInfo.netx ? 1 : 0.5 }}
+          disabled={currentPage === totalPages}
+          style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
         >
           Next Page
         </button>
