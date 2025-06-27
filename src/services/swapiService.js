@@ -37,3 +37,21 @@ export const getPlanet = async (id) => {
     throw error;
   }
 };
+export const getStarships = async (page = 1) => {
+  try {
+    const response = await axios.get(`${API_URL}/starships/?page=${page}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching starships:", error);
+    throw error;
+  }
+};
+export const getStarship = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}/starships/${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching starship with ID ${id}:`, error);
+    throw error;
+  }
+};
