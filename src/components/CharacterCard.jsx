@@ -12,9 +12,6 @@ function CharacterCard({character}) {
                 <div className="card-info">
                     <span>Height: </span>{character.height!=='unknown'?character.height:'Unknown'}
                 </div>
-                 <div className="card-info">
-                    <span>Weight: </span>{character.weight!=='unknown'?character.weight:'Unknown'}
-                </div>
                 <div className="card-actions">
                     <Link to={`/character/${characterId}`} className="btn">Detail</Link>
                 </div>
