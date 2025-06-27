@@ -10,7 +10,7 @@ function CharacterCard({character}) {
                     <span>Gender: </span>{character.gender!=='n/a'?character.gender:'No Available'}
                 </div>
                 <div className="card-info">
-                    <span>Height: </span>{character.height!=='unknown'?character.height:'Unknown'}
+                    <span>Height: </span>{character.height!=='unknown'?character.height:'Unknown'} cm
                 </div>
                 <div className="card-actions">
                     <Link to={`/character/${characterId}`} className="btn">Detail</Link>

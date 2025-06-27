@@ -19,7 +19,7 @@ function StarshipCard({ starship }) {
         </div>
         <div className="card-info">
           <span>Length: </span>
-          {starship.length !== "unknown" ? starship.length : "Unknown"}
+          {starship.length !== "unknown" ? starship.length  : "Unknown"} m
         </div>
         <div className="card-info">
           <span>Starship Class: </span>
