@@ -45,12 +45,14 @@ function PlanetList() {
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll al top
     }
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll al top
     }
   };
 
@@ -76,7 +78,10 @@ function PlanetList() {
         >
           Previous
         </button>
-        <span> Page {currentPage} of {totalPages} </span>
+        <span>
+          {" "}
+          Page {currentPage} of {totalPages}{" "}
+        </span>
         <button
           className="btn"
           onClick={handleNextPage}

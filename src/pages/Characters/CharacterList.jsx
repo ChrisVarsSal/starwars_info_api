@@ -69,10 +69,12 @@ function CharacterList() {
 
   const handleNext = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePrevious = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (loading) return <div className="loading">Loading all characters...</div>;
@@ -95,7 +97,13 @@ function CharacterList() {
           Droid ({characters.filter((c) => c.speciesName === "Droid").length})
         </option>
         <option value="alien">
-          Alien ({characters.filter((c) => c.speciesName !== "Human" && c.speciesName !== "Droid").length})
+          Alien (
+          {
+            characters.filter(
+              (c) => c.speciesName !== "Human" && c.speciesName !== "Droid"
+            ).length
+          }
+          )
         </option>
       </select>
 
@@ -114,7 +122,10 @@ function CharacterList() {
         >
           Previous
         </button>
-        <span> Page {currentPage} of {totalPages} </span>
+        <span>
+          {" "}
+          Page {currentPage} of {totalPages}{" "}
+        </span>
         <button
           className="btn"
           onClick={handleNext}
