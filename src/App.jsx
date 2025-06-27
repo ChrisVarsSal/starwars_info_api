@@ -1,12 +1,12 @@
 import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import CharacterList from "./pages/CharacterList";
-import CharacterDetail from "./pages/CharacterDetail";
-import PlanetList from "./pages/PlanetList";
-import PlanetDetail from "./pages/PlanetDetail";
-import StarshipList from "./pages/StarshipList";
-import StarshipDetail from "./pages/StarshipDetail";
+import CharacterList from "./pages/Characters/CharacterList";
+import CharacterDetail from "./pages/Characters/CharacterDetail";
+import PlanetList from "./pages/Planets/PlanetList";
+import PlanetDetail from "./pages/Planets/PlanetDetail";
+import StarshipList from "./pages/Starships/StarshipList";
+import StarshipDetail from "./pages/Starships/StarshipDetail";
 
 function App() {
   return (
