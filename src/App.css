@@ -51,6 +51,11 @@ body {
   margin-top: 20px;
 }
 
+.select{
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
 .btn,
 .select {
   background-color: #ffe81f;
@@ -139,11 +144,4 @@ body {
   background-color: rgba(255, 107, 107, 0.1);
   border-radius: 8px;
   margin-top: 20px;
-}
-
-.d-flex{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 40px;
 }
