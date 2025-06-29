@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getCharacters } from "../../services/swapiService";
 import CharacterCard from "../../components/CharacterCard";
+import SearchBar from "../../components/SearchBar";
 import axios from "axios";
 
 function CharacterList() {
@@ -9,7 +10,7 @@ function CharacterList() {
   const [error, setError] = useState(null);
   const [filterCharacters, setFilterCharacters] = useState([]);
   const [filter, setFilter] = useState("all");
-
+  const [query, setQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const resultsPerPage = 9;
 
@@ -20,25 +21,38 @@ function CharacterList() {
         let allCharacters = [];
         let page = 1;
         let next = true;
+
         while (next) {
           const data = await getCharacters(page);
           allCharacters = [...allCharacters, ...data.results];
           next = data.next !== null;
           page += 1;
         }
+
+        const speciesCache = {};
+
         const enriched = await Promise.all(
           allCharacters.map(async (char) => {
             if (char.species.length === 0) {
               return { ...char, speciesName: "Human" };
             }
+
+            const url = char.species[0];
+
+            if (speciesCache[url]) {
+              return { ...char, speciesName: speciesCache[url] };
+            }
+
             try {
-              const res = await axios.get(char.species[0]);
+              const res = await axios.get(url);
+              speciesCache[url] = res.data.name;
               return { ...char, speciesName: res.data.name };
             } catch {
               return { ...char, speciesName: "Unknown" };
             }
           })
         );
+
         setCharacters(enriched);
         setFilterCharacters(enriched);
         setError(null);
@@ -48,19 +62,30 @@ function CharacterList() {
         setLoading(false);
       }
     };
+
     fetchAllCharacters();
   }, []);
 
   useEffect(() => {
     const result = characters.filter((char) => {
-      if (filter === "all") return true;
-      if (filter === "human") return char.speciesName === "Human";
-      if (filter === "droid") return char.speciesName === "Droid";
-      return char.speciesName !== "Human" && char.speciesName !== "Droid";
+      const species = char.speciesName.toLowerCase();
+      const matchesFilter =
+        filter === "all"
+          ? true
+          : filter === "human"
+          ? species === "human"
+          : filter === "droid"
+          ? species === "droid"
+          : species !== "human" && species !== "droid";
+
+      const matchesQuery = char.name.toLowerCase().includes(query.toLowerCase());
+
+      return matchesFilter && matchesQuery;
     });
+
     setFilterCharacters(result);
     setCurrentPage(1);
-  }, [filter, characters]);
+  }, [filter, query, characters]);
 
   const indexOfLast = currentPage * resultsPerPage;
   const indexOfFirst = indexOfLast - resultsPerPage;
@@ -77,12 +102,23 @@ function CharacterList() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+
   if (loading) return <div className="loading">Loading all characters...</div>;
   if (error) return <div className="error-message">Error: {error}</div>;
 
   return (
     <div>
       <h1>Star Wars Characters</h1>
+
+      <SearchBar
+        query={query}
+        setQuery={setQuery}
+        onSearch={handleSubmit}
+        placeholder="Search Character"
+      />
 
       <select
         className="select"
@@ -91,27 +127,33 @@ function CharacterList() {
       >
         <option value="all">All ({characters.length})</option>
         <option value="human">
-          Human ({characters.filter((c) => c.speciesName === "Human").length})
+          Human ({characters.filter((c) => c.speciesName.toLowerCase() === "human").length})
         </option>
         <option value="droid">
-          Droid ({characters.filter((c) => c.speciesName === "Droid").length})
+          Droid ({characters.filter((c) => c.speciesName.toLowerCase() === "droid").length})
         </option>
         <option value="alien">
           Alien (
           {
             characters.filter(
-              (c) => c.speciesName !== "Human" && c.speciesName !== "Droid"
+              (c) =>
+                c.speciesName.toLowerCase() !== "human" &&
+                c.speciesName.toLowerCase() !== "droid"
             ).length
           }
           )
         </option>
       </select>
 
-      <div className="card-grid">
-        {currentCharacters.map((character) => (
-          <CharacterCard key={character.url} character={character} />
-        ))}
-      </div>
+      {filterCharacters.length === 0 ? (
+        <p className="no-results">No characters found.</p>
+      ) : (
+        <div className="card-grid">
+          {currentCharacters.map((character) => (
+            <CharacterCard key={character.url} character={character} />
+          ))}
+        </div>
+      )}
 
       <div className="page-controls">
         <button
@@ -123,8 +165,7 @@ function CharacterList() {
           Previous
         </button>
         <span>
-          {" "}
-          Page {currentPage} of {totalPages}{" "}
+          Page {currentPage} of {totalPages}
         </span>
         <button
           className="btn"
