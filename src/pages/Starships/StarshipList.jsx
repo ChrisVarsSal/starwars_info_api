@@ -4,9 +4,10 @@ import StarshipCard from "../../components/StarshipCard";
 
 function StarshipList() {
   const [starships, setStarships] = useState([]);
+  const [allStarships, setAllStarships] = useState([])
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [query, setQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const resultsPerPage = 9;
 
@@ -14,18 +15,18 @@ function StarshipList() {
     const fetchAllStarships = async () => {
       try {
         setLoading(true);
-        let allStarships = [];
+        let allData = [];
         let page = 1;
         let next = true;
 
         while (next) {
           const data = await getStarships(page);
-          allStarships = [...allStarships, ...data.results];
+          allData = [...allData, ...data.results];
           next = data.next !== null;
           page += 1;
         }
-
-        setStarships(allStarships);
+        setAllStarships(allData);
+        setStarships(allData);
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -36,6 +37,14 @@ function StarshipList() {
 
     fetchAllStarships();
   }, []);
+
+  useEffect(() => {
+    if(query === "") {
+      setStarships(allStarships);
+      setCurrentPage(1);
+    }
+  }, [query,allStarships])
+  
 
   const indexOfLast = currentPage * resultsPerPage;
   const indexOfFirst = indexOfLast - resultsPerPage;
@@ -56,6 +65,15 @@ function StarshipList() {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const filteredStarships = allStarships.filter((starship) =>
+      starship.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setStarships(filteredStarships);
+    setCurrentPage(1);
+  };
+
   if (loading) return <div className="loading">Loading Starships...</div>;
   if (error) return <div className="error-message">Error: {error}</div>;
 
@@ -63,11 +81,35 @@ function StarshipList() {
     <div>
       <h1>Star Wars Starships</h1>
 
+      <form className="d-flex" role="search" onSubmit={handleSubmit}>
+        <input
+          className="form-control me-2"
+          type="search"
+          placeholder="Search starship"
+          aria-label="Search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <button className="btn btn-outline-success" type="submit">
+          Search
+        </button>
+      </form>
+
       <div className="card-grid">
         {currentStarships.map((starship) => (
           <StarshipCard key={starship.url} starship={starship} />
         ))}
       </div>
+
+      {starships.length === 0 ? (
+        <p className="no-results">No starship found.</p>
+      ) : (
+        <div className="card-grid">
+          {currentStarships.map((starship) => (
+            <StarshipCard key={starship.url} starship={starship} />
+          ))}
+        </div>
+      )}
 
       <div className="page-controls">
         <button
