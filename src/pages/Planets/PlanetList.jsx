@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { getPlanets } from "../../services/swapiService";
 import PlanetCard from "../../components/PlanetCard";
+import SearchBar from "../../components/SearchBar";
 
 function PlanetList() {
   const [planets, setPlanets] = useState([]);
+  const [allPlanets, setAllPlanets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [query, setQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const resultsPerPage = 9;
 
@@ -14,18 +16,19 @@ function PlanetList() {
     const fetchAllPlanets = async () => {
       try {
         setLoading(true);
-        let allPlanets = [];
+        let allData = [];
         let page = 1;
         let next = true;
 
         while (next) {
           const data = await getPlanets(page);
-          allPlanets = [...allPlanets, ...data.results];
+          allData = [...allData, ...data.results];
           next = data.next !== null;
           page += 1;
         }
 
-        setPlanets(allPlanets);
+        setAllPlanets(allData);
+        setPlanets(allData);
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -37,6 +40,13 @@ function PlanetList() {
     fetchAllPlanets();
   }, []);
 
+  useEffect(() => {
+    if (query === "") {
+      setPlanets(allPlanets);
+      setCurrentPage(1);
+    }
+  }, [query, allPlanets]);
+
   const indexOfLast = currentPage * resultsPerPage;
   const indexOfFirst = indexOfLast - resultsPerPage;
   const currentPlanets = planets.slice(indexOfFirst, indexOfLast);
@@ -45,15 +55,24 @@ function PlanetList() {
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll al top
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll al top
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const filteredPlanets = allPlanets.filter((planet) =>
+      planet.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setPlanets(filteredPlanets);
+    setCurrentPage(1);
   };
 
   if (loading) return <div className="loading">Loading Planets...</div>;
@@ -63,11 +82,28 @@ function PlanetList() {
     <div>
       <h1>Star Wars Planets</h1>
 
+      <SearchBar
+        query={query}
+        setQuery={setQuery}
+        onSearch={handleSubmit}
+        placeholder="Search Planets"
+      />
+
       <div className="card-grid">
         {currentPlanets.map((planet) => (
           <PlanetCard key={planet.url} planet={planet} />
         ))}
       </div>
+
+      {planets.length === 0 ? (
+        <p className="no-results">No planets found.</p>
+      ) : (
+        <div className="card-grid">
+          {currentPlanets.map((planet) => (
+            <PlanetCard key={planet.url} planet={planet} />
+          ))}
+        </div>
+      )}
 
       <div className="page-controls">
         <button
