@@ -1,6 +1,6 @@
 import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar/Navbar";
 import CharacterList from "./pages/Characters/CharacterList";
 import CharacterDetail from "./pages/Characters/CharacterDetail";
 import PlanetList from "./pages/Planets/PlanetList";

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getCharacters } from "../../services/swapiService";
-import CharacterCard from "../../components/CharacterCard";
-import SearchBar from "../../components/SearchBar";
+import CharacterCard from "../../components/Cards/CharacterCard";
+import SearchBar from "../../components/Searchbar/SearchBar";
 import axios from "axios";
 
 function CharacterList() {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getStarships } from "../../services/swapiService";
-import StarshipCard from "../../components/StarshipCard";
+import StarshipCard from "../../components/Cards/StarshipCard";
 
 function StarshipList() {
   const [starships, setStarships] = useState([]);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getPlanets } from "../../services/swapiService";
-import PlanetCard from "../../components/PlanetCard";
-import SearchBar from "../../components/SearchBar";
+import PlanetCard from "../../components/Cards/PlanetCard";
+import SearchBar from "../../components/Searchbar/SearchBar";
 
 function PlanetList() {
   const [planets, setPlanets] = useState([]);
